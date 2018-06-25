@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <title>wx002_拉取微信用户信息-微信授权</title>
+    <link rel="stylesheet" href="/assets/css/doc.css?v=2.1.62"/>
+    <link rel="stylesheet" href="/assets/css/icons.css?v=2.1.62"/>
+    <!--[if lt IE 9]>
+<script>location.href = '../unsupport.html'</script>
+<![endif]-->
+<meta charset="UTF-8">
+<link rel="stylesheet" href="//f2.xiaoyaoji.cn/assets/uikit/v3.0.0-beta.30/css/uikit-rtl.min.css">
+<link rel="stylesheet" href="//f2.xiaoyaoji.cn/assets/uikit/v3.0.0-beta.30/css/uikit.min.css">
+<link rel="stylesheet" href="/assets/css/app.css?v=2.1.62">
+<link rel="alternate" hreflang="zh-hans" href="//www.xiaoyaoji.cn/"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+<meta name="renderer" content="webkit"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="shortcut icon" type="image/x-ico" href="/favicon.ico">
+<meta name="keywords" content="小幺鸡,在线文档管理,接口文档管理,接口测试,websocket在线测试"/>
+<meta name="description" content="简单好用的在线文档管理工具，支持restapi、websocket在线测试,支持markdown编辑器,提升开发效率降低接口错误率。"/><div class="hide">
+    <script src="//f2.xiaoyaoji.cn/assets/jquery/jquery.min.1.11.js"></script>
+    <script src="//f2.xiaoyaoji.cn/assets/uikit/v3.0.0-beta.30/js/uikit.js"></script>
+    <script src="//f2.xiaoyaoji.cn/assets/uikit/v3.0.0-beta.30/js/uikit-icons.js"></script>
+    <script src="//f2.xiaoyaoji.cn/assets/toastr/toastr.min.js?v=2.1.6"></script>
+    <script src="//f2.xiaoyaoji.cn/assets/pace/pace.min.js"></script>
+    <script src="//f2.xiaoyaoji.cn/assets/requirejs/require.min.2.3.3.js"></script>
+    <script>
+        window.ctx='';
+        window.x={v:'2.1.62',ctx:'',cdn:'http://f2.xiaoyaoji.cn'};
+
+        requirejs.config({
+            baseUrl:'/assets',
+            urlArgs:'v=1',
+            paths:{
+                'vue':'//f2.xiaoyaoji.cn/assets/vue/vue.2.3.3',
+                'doc-common':'/assets/js/doc/doc-common',
+                'jquery':'//f2.xiaoyaoji.cn/assets/jquery/jquery.min.1.11',
+                'veeValidate':'//f2.xiaoyaoji.cn/assets/vue/vee-validate.min',
+                'vueResource':'//f2.xiaoyaoji.cn/assets/vue/vue.resources',
+                'vueEx':'//f2.xiaoyaoji.cn/assets/vue/vue.ex',
+                'utils':'js/utils'
+            }
+        });
+
+        $(function(){
+            setTimeout(function(){
+                $('.uk-icon').each(function(){
+                    if($(this).find('svg').size()>1){
+                        $(this).find('svg:eq(0)').remove();
+                    }
+                });
+            },500);
+        });
+    </script>
+
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?81159ad58fbecc2d27d9d510ca516684";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+</div></head>
+<body>
+
+<div class="xd-header cb" id="xd-header">
+    <div class="fl">
+        <ul class="x-ul horiz">
+            <li>
+                <div class="x-li"><a>全局设置</a></div>
+                <div class="x-sub-ul">
+                    <ul>
+                        <li v-on:click="sidebar('loadGlobal','http')"><div class="x-li"><a>全局参数</a></div></li>
+                        <li v-on:click="sidebar('loadGlobal','env')"><div class="x-li"><a>环境变量</a></div></li>
+                        <li v-on:click="sidebar('loadGlobal','status')"><div class="x-li"><a>全局状态</a></div></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="x-li"><a>项目设置</a></div>
+                <div class="x-sub-ul">
+                    <ul>
+                        <li v-on:click="sidebar('loadShares')"><div class="x-li"><a >项目分享</a></div></li>
+                        <li><div class="x-li"><a href="/project/1dlFfdB6D8/info">项目信息</a></div></li>
+                        <li><div class="x-li"><a href="/project/1dlFfdB6D8/transfer">项目转让</a></div></li>
+                        <li><div class="x-li"><a href="/project/1dlFfdB6D8/member">项目成员</a></div></li>
+                        <li><div class="x-li"><a href="/project/1dlFfdB6D8/export">导出项目</a></div></li>
+                        <li><div class="x-li"><a href="/project/1dlFfdB6D8/quit">退出项目</a></div></li>
+                    </ul>
+                </div>
+            </li>
+            <li v-on:click="sidebar('loadHistory')">
+                <div class="x-li"><a >历史记录</a></div>
+            </li>
+            <li>
+                <div class="x-li">|</div>
+            </li>
+
+            <li v-on:click="sidebar('editpage')">
+                    <div class="x-li"><a><i class="iconfont icon-edit1"></i>编辑项目</a></div>
+                </li>
+            </ul>
+    </div>
+    <div class="fr">
+        <ul class="x-ul horiz">
+            <li><div class="x-li"><a href="/">主页</a></div></li>
+			<li><div class="x-li"><a target="_blank" href="https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=zpofi3ed">阿里云1000元代金券</a></div></li>
+            <li><div class="x-li"><a href="/dashboard">控制台</a></div></li>
+            <li><div class="x-li"><a href="http://www.xiaoyaoji.cn/donate" target="_blank">赞助作者</a></div></li>
+            <li>
+                <div class="x-li"><a><img src="http://q.qlogo.cn/qqapp/101333549/E45495D55B31076454703E917243A22D/100" class="user-account-logo">&nbsp;hp</a></div>
+                <div class="x-sub-ul" style="right:0px;">
+                    <ul>
+                        <li><div class="x-li"><a href="/profile">个人中心</a></div></li>
+                        <li><div class="x-li"><a href="/profile/security">安全设置</a></div></li>
+                        <li><div class="x-li"><a href="/help">帮助中心</a></div></li>
+                        <li><div class="x-li"><a href="http://www.xiaoyaoji.cn/donate" target="_blank">请作者喝咖啡</a></div></li>
+                        <li class="uk-nav-divider"></li>
+                        <li><div class="x-li"><a href="/logout">退出登录</a></div></li>
+                    </ul>
+                </div>
+            </li>
+            </ul>
+    </div>
+</div>
+<div class="xd-header-placeholder"></div>
+<script src="/assets/js/project/doc/header.js?v=2.1.62"></script>
+
+<script>window._isGlobal_ = ''</script>
+
+<div class="left db-left" id="sidebar">
+    <div class="db-left-content dlc1 bg hide">
+        <div class="ta-c logo"><a href="/dashboard/" class="v-link-active"><img
+                src="/assets/img/logo/full.png"></a></div>
+        <div class="dbl-projects">
+            <ul>
+                <li class="bd-project-title">常用项目</li>
+
+                <li class="db-item" v-for="item in projects" v-if="item.commonlyUsed=='YES'">
+                    <a v-bind:href="'/project/'+item.id"><i class="iconfont icon-projects"></i>{{item.name}}</a>
+                    <a class="shoucang" v-on:click="switchCommonly(item)"><i class="iconfont icon-biaoxingfill"></i></a>
+                </li>
+
+                <li class="bd-project-title">我的项目</li>
+                <li v-show="loading.project">
+                    <div class="spinner">
+                        <div class="double-bounce1"></div>
+                        <div class="double-bounce2"></div>
+                    </div>
+                </li>
+                <li class="db-item" v-for="item in projects">
+                    <a v-bind:href="'/project/'+item.id"><i class="iconfont icon-projects"></i>{{item.name}}</a>
+                    <a class="shoucang" v-on:click="switchCommonly(item)">
+                        <i class="iconfont"
+                           v-bind:class="{'icon-biaoxingfill':item.commonlyUsed=='YES','icon-biaoxing':item.commonlyUsed=='NO'}"></i></a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+    <div class="sidebar bg">
+        <div class="db-left-bar">
+            <div class="logo ta-c"><a href="/dashboard" class="v-link-active"><img
+                    src="/assets/img/logo/full-white.png"></a></div>
+            <br> <br> <br>
+            <ul class="ta-c">
+                <li class="db-item" v-on:click="loadHistory">
+                    <a title="历史版本"><i class="iconfont icon-history"></i></a>
+                </li>
+                <li class="db-item ">
+                    <a title="全局设置"><i
+                        class="iconfont icon-global"></i></a>
+                    <ul class="sub-ul">
+                        <li class="db-item" v-on:click="loadGlobal('http')" ><a>全局参数</a></li>
+                        <li class="db-item" v-on:click="loadGlobal('env')" ><a>环境变量</a></li>
+                        <li class="db-item" v-on:click="loadGlobal('status')"><a>状态名称</a></li>
+                    </ul>
+                </li>
+                <li class="db-item ">
+                    <a  title="项目设置"><i class="iconfont icon-dashboard"></i></a>
+                    <ul class="sub-ul">
+                        <li class="db-item" v-on:click="loadShares"><a>项目分享</a></li>
+                        <li class="db-item"><a href="/project/1dlFfdB6D8/info">项目信息</a></li>
+                            <li class="db-item"><a href="/project/1dlFfdB6D8/transfer">项目转让</a></li>
+                        <li class="db-item"><a href="/project/1dlFfdB6D8/member">项目成员</a></li>
+                        <li class="db-item"><a href="/project/1dlFfdB6D8/export">导出项目</a></li>
+                        <li class="db-item"><a href="/project/1dlFfdB6D8/quit">退出项目</a></li>
+                    </ul>
+                </li>
+                </ul><ul class="sidebar-o-op ta-c">
+                <li class="db-item "><a href="/profile" title="个人中心"><i class="iconfont icon-user"></i></a></li>
+                <li class="db-item" v-on:click="showProject"><a title="项目列表"><i
+                        class="iconfont icon-projects active"></i></a></li>
+            </ul>
+        </div>
+        <div class="db-left-layer hide" onclick="$('#sidebar').removeClass('layer')"></div>
+    </div>
+
+   <div id="history-modal" uk-modal class="uk-modal-container">
+        <div class="uk-modal-dialog">
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">历史版本</h2>
+            </div>
+            <div class="uk-modal-body" uk-overflow-auto>
+                <li v-show="loading.history">
+                    <div class="spinner">
+                        <div class="double-bounce1"></div>
+                        <div class="double-bounce2"></div>
+                    </div>
+                </li>
+                <table class="uk-table" v-show="!loading.history">
+                    <thead>
+                    <tr>
+                        <th>版本号</th>
+                        <th>修改说明</th>
+                        <th>修改人</th>
+                        <th>修改时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in history">
+                        <td><a :href="historyURL(item.docId,'',item.id)">{{item.id}}</a></td>
+                        <td class="doc-history-comment" :title="item.comment">{{item.comment?item.comment:'无'}}</td>
+                        <td>{{item.userName}}</td>
+                        <td>{{item.createTime}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div id="save-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title">保存文档</h2>
+            <p class="uk-margin"><textarea autofocus class="uk-textarea" rows="5" v-model="submitComment"
+                                           placeholder="可以在这儿输入一些备注"></textarea></p>
+            <p style="color: rgb(204, 204, 204);">提示:CTRL+S 可快速保存</p>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+                <button class="uk-button uk-button-primary uk-modal-close" type="button" v-on:click="submit">
+                    保存
+                </button>
+            </p>
+        </div>
+    </div>
+
+
+    <div id="share-modal" uk-modal v-cloak>
+        <div class="uk-modal-dialog">
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">{{shareBox=='list'?'分享列表':'创建新分享'}}</h2>
+            </div>
+
+            <div class="uk-modal-body" uk-overflow-auto>
+
+                <!-- 分享列表 begin -->
+                <div class="share-list-box " v-show="shareBox=='list'">
+                    <ul class="share-list">
+                        <div class="spinner" v-show="loading.share">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <li v-for="item in shares" v-bind:class="{editing:item.editing}">
+                            <div class="cb">
+                                <a class="share-name fl" target="_blank" v-bind:href="'/share/'+item.id">[{{item.username}}] {{item.name}} </a>
+                                <div class="fr">
+                                    <i class="iconfont icon-lock" v-on:click="item.editing=true;"></i>
+                                    <i class="iconfont icon-close" v-on:click="deleteShare(item)"></i>
+                                </div>
+                                <input type="text" class="uk-input fr" v-bind:autofocus="item.editing" v-on:blur="shareLockBlur(item)" v-model="item.password" v-bind:value="item.password" placeholder="为空则表示不要密码">
+                            </div>
+                            <div class="cb">
+                                <div class="fl share-doc-names">{{item.shareAll=='YES'?'整个项目':item.docNames}} {{item.docNames}}{{item.docNames}}{{item.docNames}}</div>
+                                <div class="fr">{{item.createTime}}</div>
+                            </div>
+                        </li>
+                    </ul>
+               </div>
+                <!-- 分享列表 end -->
+
+                <!-- 创建新的分享 begin -->
+                <div class="share-creation-box" v-show="shareBox=='creation'">
+                    <form class="uk-form-horizontal uk-margin-large">
+                        <div class="uk-margin">
+                            <label class="uk-form-label" for="form-all-project">整个项目</label>
+                            <div class="uk-form-controls">
+                                <input class="uk-checkbox" id="form-all-project" v-model="share.shareAll" v-bind:true-value="'YES'" v-bind:false-value="'NO'"  type="checkbox">
+                            </div>
+                        </div>
+
+                        <div class="uk-margin" v-show="share.shareAll!='YES'">
+                            <label class="uk-form-label">选择分类</label>
+                            <div class="uk-form-controls">
+                                <select class="uk-select" multiple  v-model="share.chosedIds">
+                                    <option v-for="item in rootDocs" v-bind:value="item.id">{{item.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="uk-margin">
+                            <label class="uk-form-label">分享名称</label>
+                            <div class="uk-form-controls">
+                                <input class="uk-input" maxlength="50" v-model="share.name" type="text" placeholder="请输入分享名称">
+                            </div>
+                        </div>
+                        <div class="uk-margin">
+                            <label class="uk-form-label">阅读密码</label>
+                            <div class="uk-form-controls">
+                                <input class="uk-input" maxlength="20" v-model="share.password" type="text" placeholder="请输入阅读密码，为空表示不要密码">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- 创建新的分享 end -->
+            </div>
+
+            <div class="uk-modal-footer uk-text-right">
+                <div v-show="shareBox=='list'">
+                    <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+                    <button class="uk-button uk-button-primary" type="button" v-on:click="shareBox='creation'">创建新分享</button>
+                    </div>
+                <div v-show="shareBox=='creation'">
+                    <button class="uk-button uk-button-default" v-on:click="shareBox='list'" type="button">返回</button>
+                    <button class="uk-button uk-button-primary" v-on:click="createShare" type="button">创建</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="global-modal" class="uk-modal-container"  uk-modal v-cloak>
+        <div class="uk-modal-dialog">
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">{{global.typeName}}</h2>
+                <button type="button" class="uk-modal-close-default uk-icon" v-on:click="closeGlobalModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" ratio="1"><line fill="none" stroke="#000" stroke-width="1.1" x1="1" y1="1" x2="13" y2="13"></line><line fill="none" stroke="#000" stroke-width="1.1" x1="13" y1="1" x2="1" y2="13"></line></svg>
+                </button>
+            </div>
+
+            <div class="uk-modal-body" uk-overflow-auto>
+                <iframe width="100%" name="globalWindow" id="iframe" height="400px" marginwidth="0"
+                        marginheight="0" allowtransparency="true" v-bind:src="global.url"></iframe>
+            </div>
+
+            <div class="uk-modal-footer uk-text-right" v-if="global.typeName=='全局参数'">
+                <div>
+                    <button class="uk-button uk-button-default" v-on:click="closeGlobalModal" type="button">关闭</button>
+                    <button class="uk-button uk-button-primary" v-on:click="saveGlobalHttp" type="button">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>
+
+
+
+
+<script src="/assets/js/project/sidebar.js?v=2.1.62"></script><div class="doc-left" id="docLeft">
+    <input type="text" class="doc-search" v-model="searchText" v-on:keyup.enter="search" placeholder="搜索...">
+    <div class="dl-content" id="doc-names">
+        <ul class="dl-docs" v-on:contextmenu.prevent="contextMenu($event)" v-show="!showSearch">
+            <li class="cb">
+                    <div class="dl-doc dl-project-name">
+                        <div class="doc-name cb ">
+                            <span class="el-tree-expand is-leaf"></span>
+                            微信授权</div>
+                    </div>
+                </li>
+                <li class="divider"></li>
+            <li class="cb name-item" data-id="1dlFfedY3m"  data-name="项目文档" data-type="sys.doc.md" data-sort="0">
+    <div class="dl-doc">
+        <div class="doc-name cb  _ folder" v-on:click.stop="fold($event)">
+            <span class="dl-background"></span>
+            <span class="el-tree-expand "></span>
+            <a class="item-name"  v-on:click.stop="itemClick('/doc/1dlFfedY3m',$event)" href="/doc/1dlFfedY3m">项目文档</a>
+            </div>
+        <ul class="dl-docs dl-docs-sub hide" data-id="1dlFfedY3m" >
+            <li class="cb name-item" data-id="1dleD9gxl3"  data-name="springcloud微信授权接口说明" data-type="sys.doc.richtext" data-sort="100">
+    <div class="dl-doc">
+        <div class="doc-name cb  _ " v-on:click.stop="fold($event)">
+            <span class="dl-background"></span>
+            <span class="el-tree-expand is-leaf"></span>
+            <a class="item-name"  v-on:click.stop="itemClick('/doc/1dleD9gxl3',$event)" href="/doc/1dleD9gxl3">springcloud微信授权接口说明</a>
+            </div>
+        </div>
+</li><li class="cb name-item" data-id="1dmNrGSn1M"  data-name="wx002_拉取微信用户信息" data-type="sys.http" data-sort="100">
+    <div class="dl-doc">
+        <div class="doc-name cb active _ " v-on:click.stop="fold($event)">
+            <span class="dl-background"></span>
+            <span class="el-tree-expand is-leaf"></span>
+            <a class="item-name"  v-on:click.stop="itemClick('/doc/1dmNrGSn1M',$event)" href="/doc/1dmNrGSn1M">wx002_拉取微信用户信息</a>
+            </div>
+        </div>
+</li><li class="cb name-item" data-id="1dmPKH4zIl"  data-name="wx001_获取微信网页授权链接" data-type="sys.http" data-sort="100">
+    <div class="dl-doc">
+        <div class="doc-name cb  _ " v-on:click.stop="fold($event)">
+            <span class="dl-background"></span>
+            <span class="el-tree-expand is-leaf"></span>
+            <a class="item-name"  v-on:click.stop="itemClick('/doc/1dmPKH4zIl',$event)" href="/doc/1dmPKH4zIl">wx001_获取微信网页授权链接</a>
+            </div>
+        </div>
+</li></ul>
+        </div>
+</li></ul>
+        <ul class="dl-docs doc-search-result" v-cloak v-show="showSearch">
+            <li class="cb" v-for="item in searchResults">
+                <div class="dl-doc">
+                    <div class="doc-name cb ">
+                        <span class="dl-background"></span>
+                        <a class="item-name" v-on:click="itemClick('/doc/'+(item.id)+(edit?'/edit':''),$event)" :href="ctx+'/doc/'+(item.id)+(edit?'/edit':'')">{{item.name}}</a>
+                    </div>
+                </div>
+            </li>
+            <div v-show="searchResults.length == 0" class="searh-no-results">
+                没有找到对应的结果
+            </div>
+        </ul>
+    </div>
+
+    <ul class="dl-menus" id="dl-menus" v-on:click.stop v-cloak v-show="menu.show"
+        v-bind:style="{top:menu.top+'px',left:menu.left+'px'}">
+        <li>
+            <div class="dl-menu-name folder">新建</div>
+            <ul class="dl-menus sub">
+                <li uk-toggle="target: #docCreateModal" v-on:click="createFn('sys.http')">
+                        <div data-type="sys.http" class="dl-menu-name">http文档</div>
+                    </li>
+                <li uk-toggle="target: #docCreateModal" v-on:click="createFn('sys.websocket')">
+                        <div data-type="sys.websocket" class="dl-menu-name">websocket文档</div>
+                    </li>
+                <li uk-toggle="target: #docCreateModal" v-on:click="createFn('sys.doc.richtext')">
+                        <div data-type="sys.doc.richtext" class="dl-menu-name">富文本</div>
+                    </li>
+                <li uk-toggle="target: #docCreateModal" v-on:click="createFn('sys.doc.md')">
+                        <div data-type="sys.doc.md" class="dl-menu-name">markdown</div>
+                    </li>
+                <li uk-toggle="target: #docCreateModal" v-on:click="createFn('sys.folder')">
+                        <div data-type="sys.folder" class="dl-menu-name">文件夹</div>
+                    </li>
+                <li uk-toggle="target: #docCreateModal" v-on:click="createFn('sys.thirdparty')">
+                        <div data-type="sys.thirdparty" class="dl-menu-name">第三方链接</div>
+                    </li>
+                </ul>
+        </li>
+        <li class="line" v-if="menu.isFolder"></li>
+
+        <li uk-toggle="target:#docCopyModal">
+            <div class="dl-menu-name">复制</div>
+        </li>
+        <li v-on:click="updateName($event)" uk-toggle="target: #docCreateModal">
+            <div class="dl-menu-name">重命名</div>
+        </li>
+        <li v-on:click="deleteDoc">
+            <div class="dl-menu-name">删除</div>
+        </li>
+    </ul>
+
+    <div uk-modal id="docCreateModal" v-cloak>
+        <div class="uk-modal-dialog">
+            <div class="uk-modal-body">
+                <div>
+                    <label>请输入名称:</label>
+                    <input class="uk-input" v-model="createModal.value" v-on:keyup.enter="createSubmit" :value="createModal.value" type="text"
+                           autofocus="">
+                </div>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+                <button class="uk-button uk-button-primary" v-on:click="createSubmit">{{createModal.id?'更新':'创建'}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <div uk-modal id="docCopyModal" v-cloak>
+        <div class="uk-modal-dialog">
+            <div class="uk-modal-body">
+                <form class="uk-form-stacked">
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="form-stacked-select">选择一个项目(destination)</label>
+                        <div class="uk-form-controls">
+                            <select class="uk-select" id="form-stacked-select" v-model="copiesProjectId">
+                                <option v-for="item in projects" v-bind:value="item.id">{{item.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">取消</button>
+                <button class="uk-button uk-button-primary" v-on:click="copyDoc">复制</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="dl-placehoder" v-cloak>
+        本文档由<a href="http://www.xiaoyaoji.cn" target="_blank">小幺鸡</a>编辑
+    </div>
+</div>
+<script>window._projectId_ = '1dlFfdB6D8';
+window._edit_ = ''</script>
+<script src="/assets/js/project/left.js?v=2.1.62"></script><div class="doc doc-content">
+    <div class="hide" id="loading">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+    </div>
+
+    <div class="doc-full-width" id="doc-content">
+
+
+<link rel="stylesheet" href="/proxy/sys.http/assets/css/http.css?v=2.1.62"/>
+<div class="content-section" id="docApp" style="padding: 0 10px;" v-cloak>
+
+<span class="doc-update-time">更新时间: <span id="api-update-time">{{doc.lastUpdateTime}}</span></span>
+    <div id="api-details" class="api-details">
+        <p class="doc-item-section-title">基本信息</p>
+        <div class="api-base-info api-edit-box doc-item-section">
+            <div class="cb">
+                <div class="col-sm-3">接口名称: wx002_拉取微信用户信息</div>
+                <div class="col-sm-9" v-show="requestURL">接口地址: {{requestURL}}</div>
+            </div>
+            <div class="cb">
+                <div class="col-sm-3" v-if="content.requestMethod">请求方法: {{content.requestMethod}}</div>
+                <div class="col-sm-3" v-if="content.dataType">数据类型: {{content.dataType}}</div>
+                <div class="col-sm-3" v-if="content.contentType">响应类型: {{content.contentType}}</div>
+                <div class="col-sm-3" v-if="content.status">接口状态: {{content.status}}</div>
+            </div>
+        </div>
+        <div class="doc-item-section" v-if="content.description">
+            <p class="doc-item-section-title">接口描述</p>
+            <div v-html="content.description"></div>
+        </div>
+        <div class="doc-item-section" v-if="attachs && attachs.length>0">
+            <p class="doc-item-section-title">附件</p>
+            <div class="cb">
+                <div class="doc-attach" v-for="item in attachs" v-bind:class="{'file':item.type=='FILE'}">
+                    <a :href="fileAccess+item.url" v-if="item.type=='FILE'" target="_blank">{{item.fileName}}</a>
+                    <img v-if="item.type =='IMG'" v-bind:src="fileAccess+item.url" :onclick="'window.open(\''+fileAccess+item.url+'\');'">
+                </div>
+            </div>
+        </div>
+        <div v-if="(global.http.requestHeaders&&global.http.requestHeaders.length>0 && !content.ignoreGHttpReqHeaders)">
+            <p class="doc-item-section-title">全局请求头</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-2">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-2">默认值</li>
+                    <li class="col-sm-7">描述</li>
+                </ul>
+                <request-headers-vue
+                        v-bind:request-headers.sync="global.http.requestHeaders"></request-headers-vue>
+            </div>
+        </div>
+        <div v-if=" (global.http.requestArgs  && global.http.requestArgs.length>0 && !content.ignoreGHttpReqArgs)">
+            <p class="doc-item-section-title">全局请求参数</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-2">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-1">类型</li>
+                    <li class="col-sm-2">默认值</li>
+                    <li class="col-sm-6">描述</li>
+                </ul>
+                <request-args-vue
+                        v-bind:request-args.sync="global.http.requestArgs"></request-args-vue>
+            </div>
+        </div>
+        <div v-if="(global.http.responseHeaders&&global.http.responseHeaders.length>0 && !content.ignoreGHttpRespHeaders)">
+            <p class="doc-item-section-title">全局响应头</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-2">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-2">默认值</li>
+                    <li class="col-sm-7">描述</li>
+                </ul>
+                <request-headers-vue
+                        v-bind:request-headers.sync="global.http.responseHeaders"></request-headers-vue>
+            </div>
+        </div>
+
+        <div v-if="(global.http.responseArgs  && global.http.responseArgs.length>0 && !content.ignoreGHttpRespArgs)">
+            <p class="doc-item-section-title">全局响应参数</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-3">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-2">数据类型</li>
+                    <li class="col-sm-6">描述</li>
+                </ul>
+                <response-args-vue
+                        v-bind:response-args.sync="global.http.responseArgs"></response-args-vue>
+            </div>
+        </div>
+
+
+
+        <div v-if="(content.requestHeaders  && content.requestHeaders.length>0)">
+            <p class="doc-item-section-title">请求头</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-2">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-2">默认值</li>
+                    <li class="col-sm-7">描述</li>
+                </ul>
+                <request-headers-vue
+                        v-bind:request-headers.sync="content.requestHeaders"></request-headers-vue>
+            </div>
+        </div>
+
+        <div v-if=" (content.requestArgs  && content.requestArgs.length>0)">
+            <p class="doc-item-section-title">请求参数</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-2">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-1">类型</li>
+                    <li class="col-sm-2">默认值</li>
+                    <li class="col-sm-6">描述</li>
+                </ul>
+                <request-args-vue
+                        v-bind:request-args.sync="content.requestArgs"></request-args-vue>
+            </div>
+        </div>
+
+
+        <div v-if="(content.requestHeaders  && content.requestHeaders.length>0)">
+            <p class="doc-item-section-title">响应头</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-2">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-2">默认值</li>
+                    <li class="col-sm-7">描述</li>
+                </ul>
+                <request-headers-vue
+                        v-bind:request-headers.sync="content.responseHeaders"></request-headers-vue>
+            </div>
+        </div>
+         <div v-if="content.responseArgs && content.responseArgs.length>0">
+            <p class="doc-item-section-title">响应数据</p>
+            <div class="div-table">
+                <ul class="div-table-header div-table-line cb">
+                    <li class="col-sm-3">参数名称</li>
+                    <li class="col-sm-1">是否必须</li>
+                    <li class="col-sm-2">数据类型</li>
+                    <li class="col-sm-6">描述</li>
+                </ul>
+                <response-args-vue
+                        v-bind:response-args.sync="content.responseArgs"></response-args-vue>
+            </div>
+        </div>
+
+
+        <div v-if="content.example">
+            <p class="doc-item-section-title">例子</p>
+            <div class="api-details-desc api-edit-box">
+                <pre class="content" v-html="content.example"></pre>
+            </div>
+        </div>
+        <p class="doc-item-section-title">演示</p>
+        <div>
+            <div class="form">
+                <div class="item">
+                    <div class="col-sm-2 label second">请求地址</div>
+                    <div class="col-sm-8">
+                        <input type="text" class="text" id="requestURL" v-model="requestURL">
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="uk-button-group" v-if="global.environment.length>0">
+                            <button class="uk-button uk-button-default">{{currentEnv.name}}</button>
+                            <div class="uk-inline">
+                                <button class="uk-button uk-button-default" type="button">
+                                    <span  class="uk-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" ratio="1"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                                </button>
+                                <div uk-dropdown="mode: click; boundary: ! .uk-button-group; boundary-align: true;">
+                                    <ul class="uk-nav uk-dropdown-nav">
+                                        <li v-for="item in global.environment" v-on:click="changeEnv(item)" v-bind:class="{'uk-active':item.t == currentEnv.t}"><a href="#">{{item.name}}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form">
+                <div v-if="urlArgs.length>0">
+                    <p class="doc-item-section-title second">地址参数</p>
+                    <div class="item" v-for="(item,index) in urlArgs">
+                        <div class="col-sm-2 label">{{item.name}}</div>
+                        <div class="col-sm-8">
+                            <input data-type="text" v-model="item.tempValue" type="text"
+                                   :name="item.name" placeholder="替换URL上的参数"
+                                   class="text">
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="uk-inline">
+                                <span class="uk-icon" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" ratio="1"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                                <div uk-dropdown>
+                                    <ul class="uk-nav uk-dropdown-nav">
+                                        <li v-for="a in algorithms" v-on:click="algorithmClick(index,a.fn,urlArgs)" ><a href="#">{{a.name}}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="formHeaders.length>0">
+                <form class="api-test form" id="header-form">
+                    <p class="doc-item-section-title second">请求头</p>
+                    <div class="item" v-for="(item,index) in formHeaders">
+                        <div class="col-sm-2 label">{{item.name}}</div>
+                        <div class="col-sm-8">
+                            <input type="text" :name="item.name" v-model="item.tempValue"
+                                   :placeholder="item.description" class="text">
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="uk-inline">
+                                <span class="uk-icon" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" ratio="1"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                                <div uk-dropdown>
+                                    <ul class="uk-nav uk-dropdown-nav">
+                                        <li v-for="a in algorithms" v-on:click="algorithmClick(index,a.fn,formHeaders)" ><a href="#">{{a.name}}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <form class="form" id="args-form" v-on:submit.prevent>
+                <div v-if="formArgs.length>0">
+                    <div class="cb">
+                        <div>
+                            <div v-if="content.dataType=='XML' || content.dataType =='JSON'">
+                                <div class="item">
+                                    <div class="col-sm-2 label">Body</div>
+                                    <div class="col-sm-8">
+                                        <pre id="ace-editor-box"></pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <p class="doc-item-section-title second">请求参数</p>
+                                <div class="item"  v-for="(item,index) in formArgs">
+                                    <div class="col-sm-2 label">{{item.name}}</div>
+                                    <div class="col-sm-8" v-bind:class="{'full-text':item.type=='file'}">
+                                        <input :data-type="item.type"
+                                               v-if="item.type=='file'"
+                                               type="file"
+                                               :name="item.name"
+                                               class="api-request-args-item"
+                                               :placeholder="item.description"
+                                               v-bind:class="{'text':item.type!='file'}">
+                                        <input :data-type="item.type"
+                                               v-else
+                                               v-model="item.tempValue"
+                                               type="text"
+                                               :name="item.name"
+                                               class="api-request-args-item"
+                                               :placeholder="item.description"
+                                               v-bind:class="{'text':item.type!='file'}">
+
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="uk-inline">
+                                            <span class="uk-icon" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" ratio="1"><polygon points="5 7 15 7 10 12"></polygon></svg></span>
+                                            <div uk-dropdown>
+                                                <ul class="uk-nav uk-dropdown-nav">
+                                                    <li v-for="a in algorithms" v-on:click="algorithmClick(index,a.fn,formArgs)" ><a href="#">{{a.name}}</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="content.dataType=='RAW'">
+                    <p class="doc-item-section-title second">请求数据</p>
+                    <div class="item">
+                        <div class="col-sm-2 label">body</div>
+                        <div class="col-sm-8">
+                            <textarea class="text" id="rawBody"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="content.dataType=='BINARY'">
+                    <p class="doc-item-section-title second">请求数据</p>
+                    <div class="item">
+                        <div class="col-sm-2 label">BINARY</div>
+                        <div class="col-sm-8">
+                            <input type="file" class="full-text" id="binaryBody">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form">
+                    <div class="item">
+                        <div class="col-sm-2 label"></div>
+                        <div class="col-sm-8">
+                            <div v-if="!hasXyjPlugin">
+                                <input type="button" data-ignore v-on:click.stop="localSubmit"
+                                       class="btn btn-primary" :value="apiLoading?'加载中':'运行'">
+                            </div>
+                            <div v-if="hasXyjPlugin">
+                            <input type="button" data-ignore v-on:click.stop="pluginSubmit"
+                                   class="btn btn-primary" :value="apiLoading?'加载中':'运行'">
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </form>
+            <!--<p class="doc-item-section-title">结果数据</p>-->
+            <div class="api-result-tabs cb" v-show="result.content || result.resultHeaders">
+                <a class="tab fl " v-on:click="resultActive='content'" v-bind:class="{'active':(resultActive=='content')}">Body</a>
+                <a class="tab fl" v-on:click="resultActive='headers'" v-bind:class="{'active':(resultActive=='headers')}">Headers</a>
+                <a class="tab fr">Time: {{result.resultRunTime}} ms</a>
+                <a class="tab fr">StatusCode: {{result.resultStatusCode}}</a>
+            </div>
+            <div v-show="result.content || result.resultHeaders" class="api-result-box">
+                <i v-show="!!result.content && (resultActive=='content')" data-clipboard-target="#api-result" class="content-copy iconfont icon-copy"></i>
+                <i v-show="!!result.content && content.contentType=='HTML' && (resultActive=='content')" class="iconfont icon-openwindow" v-on:click="openNewWindow"></i>
+                <i v-show="!!result.content && (resultActive=='headers')" id="api-result-header-copy" class="iconfont icon-copy"></i>
+                <div id="api-result">
+                    <pre v-show="resultActive=='content'" id="api-result-content" v-html="result.content"></pre>
+                    <div v-show="resultActive=='headers'" id="api-result-headers">
+                        <pre class="api-result-headers-list" v-show="result.resultHeaders">{{result.resultHeaders}}</pre>
+                        <div class="api-result-headers-list" v-show="!result.resultHeaders">
+                            <div>
+                                No header for you
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </div>
+</div>
+<script type="text/template" id="request-args-template" class="hide">
+    <div v-bind:class="{'div-editing-table':editing,'request-args':true}" :data-pid="pid" :data-module-name="name">
+        <div class="div-table-line"
+             v-bind:class="{'div-editing-line':editing}" v-for="(item,index) in requestArgs" :key="item.id" :data-id="item.id">
+            <div v-if="editing">
+                <ul class="cb">
+                    <li class="col-sm-1">
+                        <i class="iconfont icon-close" v-on:click="removeRow(item,requestArgs)"></i>
+                        <i class="iconfont icon-tianjia" v-show="item.type && ( item.type.indexOf('object')!=-1) "
+                           v-on:click="insertRow(item)"></i>
+                        <i class="iconfont icon-drag-copy" v-on:dragstart="dragstart(requestArgs,item)"></i>
+                    </li>
+                    <li class="col-sm-3 input">
+                        <input type="text" list="requestlist" class="text name" v-model="item.name" :value="item.name">
+                    </li>
+                    <li class="col-sm-2"><select v-model="item.require">
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select></li>
+                    <li class="col-sm-2">
+                        <select v-model="item.type">
+                            <option value="string">string</option>
+                            <option value="number">number</option>
+                            <option value="boolean">boolean</option>
+                            <option value="object">object</option>
+                            <option value="array">array</option>
+                            <option value="array[number]">array[number]</option>
+                            <option value="array[boolean]">array[boolean]</option>
+                            <option value="array[string]">array[string]</option>
+                            <option value="array[object]">array[object]</option>
+                            <option value="array[array]">array[array]</option>
+                            <option value="file">file</option>
+                        </select>
+                    </li>
+                    <li class="col-sm-2 input"><input type="text" class="text" v-model="item.defaultValue"
+                                                      :value="item.defaultValue"></li>
+                    <li class="col-sm-2 input">
+                        <input type="text" class="text" v-model="item.description" :value="item.description">
+                    </li>
+                </ul>
+            </div>
+            <div v-else>
+                <ul class="cb">
+                    <li class="col-sm-2 name">
+                        <div v-if="item.type &&(item.type.indexOf('object')!=-1)">
+                            <i class="iconfont icon-my open" v-on:click="apiArgsColumnFold($event)"></i>
+                        </div>
+                        <div class="value">{{item.name}}</div>
+                        <div class="hover name">{{item.name}}</div>
+                    </li>
+                    <li class="col-sm-1"> {{item.require || 'false'}}</li>
+                    <li class="col-sm-1" :title="item.type"> {{item.type}}</li>
+                    <li class="col-sm-2" :title="item.defaultValue"> {{item.defaultValue}}</li>
+                    <li class="col-sm-6 full-height" :title="item.description">
+                        <div class="value">{{item.description}}</div>
+                        <div class="hover description">{{item.description}}</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="sub">
+                <request-args-vue v-bind:request-args="item.children" :name="name" v-bind:editing="editing"></request-args-vue>
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    requirejs(['vue','/proxy/sys.http/assets/js/table.js?v=2.1.6'],function(Vue,table){
+        table = $.extend(true,{},table);
+        table.template=document.getElementById('request-args-template').innerHTML;
+        table.props=['requestArgs','editing','name', 'pid'];
+        Vue.component('RequestArgsVue',table);
+    });
+</script>
+
+<script type="text/template"  id="request-headers-template" class="hide">
+    <div v-bind:class="{'div-editing-table':editing,'request-headers':true}" class="placeholder-request-headers" :data-pid="pid" :data-module-name="name">
+    <div class="div-table-line " v-bind:class="{'div-editing-line':editing}" v-for="item in requestHeaders" :key="item.id"  :data-id="item.id">
+        <div v-if="editing">
+        <ul class="cb">
+            <li class="col-sm-1">
+                <i class="iconfont icon-close" v-on:click="removeRow(item,requestHeaders)"></i>
+                <i class="iconfont icon-drag-copy" v-on:dragstart="dragstart(requestHeaders,item)"></i>
+            </li>
+            <li class="col-sm-3 input"><input type="text" list="headerlist" class="text name" v-model="item.name" :value="item.name"></li>
+            <li class="col-sm-2"><select v-model="item.require">
+                <option value="true">true</option>
+                <option value="false">false</option>
+            </select></li>
+            <li class="col-sm-2 input"><input type="text" class="text" v-model="item.defaultValue" :value="item.defaultValue"></li>
+            <li class="col-sm-4 input"><input type="text" class="text" v-model="item.description" :value="item.description"></li>
+        </ul>
+        </div>
+        <div v-else>
+        <ul class="cb">
+            <li class="col-sm-2 name full-height">
+                <template v-if="item.type &&( item.type=='object' || item.type.indexOf('array')!=-1)">
+                    <i class="iconfont icon-my open" v-on:click="apiArgsColumnFold($event)"></i>
+                </template>
+                <div class="value">{{item.name}}</div>
+                <div class="hover name">{{item.name}}</div>
+            </li>
+            <li class="col-sm-1">&nbsp;{{item.require || 'false' }} </li>
+            <li class="col-sm-2" :title="item.defaultValue">
+                <div class="value">{{item.defaultValue}}</div>
+                <div class="hover">{{item.defaultValue}}</div>
+            </li>
+            <li class="col-sm-7 full-height" :title="item.description">
+                <div class="value">{{item.description}}</div>
+                <div class="hover description">{{item.description}}</div>
+            </li>
+        </ul>
+        </div>
+
+        <div class="sub">
+            <request-headers-vue v-bind:request-headers.sync="item.children" v-bind:editing="editing"></request-headers-vue>
+        </div>
+    </div>
+    </div>
+</script>
+<script>
+    requirejs(['vue','/proxy/sys.http/assets/js/table.js?v=2.1.6'],function(Vue,table){
+        table = $.extend(true,{},table);
+        table.template=document.getElementById('request-headers-template').innerHTML;
+        table.props=['requestHeaders','editing','name','pid'];
+        Vue.component('RequestHeadersVue',table);
+    });
+</script>
+<script type="text/template" id="response-args-template" class="hide">
+    <div v-bind:class="{'div-editing-table':editing,'response-args':true}" class="placeholder-response-args" :data-pid="pid" :data-module-name="name">
+        <div class="div-table-line " v-bind:class="{'div-editing-line':editing}" v-for="(item,index) in responseArgs"
+             :key="item.id" :data-id="item.id">
+            <div v-if="editing">
+                <ul class="cb">
+                    <li class="col-sm-1">
+                        <i class="iconfont icon-close" v-on:click="removeRow(item,responseArgs)"></i>
+                        <i class="iconfont icon-tianjia" v-on:click="insertRow(item,name)"></i>
+                        <i class="iconfont icon-drag-copy" v-on:dragstart="dragstart(responseArgs,item)"></i>
+                    </li>
+                    <li class="col-sm-3 input"><input type="text" list="responselist" class="text name"
+                                                      v-model="item.name" :value="item.name"></li>
+                    <li class="col-sm-2"><select v-model="item.require">
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select></li>
+                    <li class="col-sm-2">
+                        <select v-model="item.type">
+                            <option value="string">string</option>
+                            <option value="number">number</option>
+                            <option value="boolean">boolean</option>
+                            <option value="object">object</option>
+                            <option value="array">array</option>
+                            <option value="array[number]">array[number]</option>
+                            <option value="array[boolean]">array[boolean]</option>
+                            <option value="array[string]">array[string]</option>
+                            <option value="array[object]">array[object]</option>
+                            <option value="array[array]">array[array]</option>
+                        </select>
+                    </li>
+                    <li class="col-sm-4 input full-height">
+                        <input type="text" class="text" v-model="item.description" :value="item.description">
+                    </li>
+                </ul>
+            </div>
+            <div v-else>
+                <ul class="cb">
+                    <li class="col-sm-3 name">
+                        <template v-if="item.type &&(item.type.indexOf('object')!=-1)">
+                            <i class="iconfont icon-my open" v-on:click="apiArgsColumnFold($event)"></i>
+                        </template>
+                        <div class="value">{{item.name}}</div>
+                        <div class="hover name">{{item.name}}</div>
+                    </li>
+                    <li class="col-sm-1">&nbsp;{{item.require || 'false'}}</li>
+                    <li class="col-sm-2" :title="item.type"> {{item.type}}</li>
+                    <li class="col-sm-6 full-height" :title="item.description">
+                        <div class="value">{{item.description}}</div>
+                        <div class="hover description">{{item.description}}</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sub">
+                <response-args-vue v-bind:response-args="item.children" v-bind:pid="item.id"
+                                   v-bind:editing="editing"></response-args-vue>
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    requirejs(['vue', '/proxy/sys.http/assets/js/table.js?v=2.1.6'], function (Vue, table) {
+        table = $.extend(true, {}, table);
+        table.template = document.getElementById('response-args-template').innerHTML;
+        table.props = ['responseArgs', 'editing', 'name', 'pid'];
+        Vue.component('ResponseArgsVue', table);
+    });
+</script>
+<script>
+    var doc = {"children":[],"content":"{\"requestMethod\":\"GET\",\"dataType\":\"X-WWW-FORM-URLENCODED\",\"contentType\":\"JSON\",\"requestArgs\":[{\"id\":\"fgj4te\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"code\"},{\"id\":\"3dx0gt\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"state\",\"defaultValue\":\"appid_md5\",\"description\":\"默认appid_md5\"}],\"requestHeaders\":[],\"responseHeaders\":[],\"responseArgs\":[{\"id\":\"9tt5ek\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"openid\"},{\"id\":\"cz4o2t\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"nickname\"},{\"id\":\"fk09b6\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"sex\"},{\"id\":\"x66sl2\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"province\"},{\"id\":\"pyn43m\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"city\"},{\"id\":\"sd69cg\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"country\"},{\"id\":\"3nfp1a\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"headimgurl\"},{\"id\":\"8w44l8\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"privilege\"},{\"id\":\"q4blc5\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"unionid\"}],\"url\":\"http://localhost/wx/auth/redirect\",\"status\":\"有效\",\"example\":\"{    \\\"openid\\\":\\\" OPENID\\\",\\n\\\" nickname\\\": NICKNAME,\\n\\\"sex\\\":\\\"1\\\",\\n\\\"province\\\":\\\"PROVINCE\\\"\\n\\\"city\\\":\\\"CITY\\\",\\n\\\"country\\\":\\\"COUNTRY\\\",\\n\\\"headimgurl\\\":    \\\"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\\\",\\n\\\"privilege\\\":[ \\\"PRIVILEGE1\\\" \\\"PRIVILEGE2\\\"     ],\\n\\\"unionid\\\": \\\"o6_bmasdasdsad6_2sgVt7hMZOPfL\\\"\\n}\",\"description\":\"用户点击授权链接后,微信会调用此接口,此接口的参数只能由微信服务器提供,所以只供微信使用,不返回html,后台需要在此接口对用户信息等进行绑定然后重定向到html\",\"ignoreGHttpReqHeaders\":true,\"ignoreGHttpReqArgs\":true,\"ignoreGHttpRespHeaders\":true,\"ignoreGHttpRespArgs\":true}","createTime":"2018-02-27 21:40:55","id":"1dmNrGSn1M","lastUpdateTime":"2018-02-27 22:37:50","name":"wx002_拉取微信用户信息","parentId":"1dlFfedY3m","projectId":"1dlFfdB6D8","sort":100,"type":"sys.http"},
+        projectGlobal={"environment":"[]","http":"{\"requestHeaders\":[{\"require\":\"true\",\"children\":[],\"name\":\"encrypt\",\"description\":\"none/simple\"},{\"require\":\"true\",\"children\":[],\"name\":\"version\",\"description\":\"接口版本号\"},{\"require\":\"true\",\"children\":[],\"name\":\"deviceType\",\"description\":\"设备类型 IOS/ANDROID\"},{\"require\":\"true\",\"children\":[],\"name\":\"appType\",\"description\":\"app类型 B/C\"},{\"require\":\"true\",\"children\":[],\"name\":\"appVersion\",\"description\":\"APP版本号\"}],\"responseHeaders\":[],\"requestArgs\":[],\"responseArgs\":[]}","id":"1dlFflS3Ts","projectId":"1dlFfdB6D8","status":"[{\"name\":\"有效\",\"value\":\"ENABLE\",\"t\":1493901719144},{\"name\":\"废弃\",\"value\":\"DEPRECATED\",\"t\":1493901728060}]"},
+        pluginId='sys.http';
+</script>
+<link rel="stylesheet" type="text/css" href="//f2.xiaoyaoji.cn/assets/jsonformat/jsonFormater.css"/>
+<script src="/proxy/sys.http/web/http/view.js?v=2.1.6"></script><!-- loading start -->
+
+
+<script>
+    window._edit_ = '', _projectName_ = '微信授权', _projectId_ = '1dlFfdB6D8', _docId_ = '1dmNrGSn1M';
+    if(!window.requirejs){
+        location.reload();
+    }
+</script>
+
+</div>
+    </div>
+    <!-- loading end -->
+    </body>
+    </html>

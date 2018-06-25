@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>generator</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.0/jquery-1.8.0.js"></script>
+<script type="application/javascript">
+    var doc = {
+            "children": [],
+            "content": "{\"requestMethod\":\"GET\",\"dataType\":\"X-WWW-FORM-URLENCODED\",\"contentType\":\"JSON\",\"requestArgs\":[{\"id\":\"fgj4te\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"code\"},{\"id\":\"3dx0gt\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"state\",\"defaultValue\":\"appid_md5\",\"description\":\"默认appid_md5\"}],\"requestHeaders\":[],\"responseHeaders\":[],\"responseArgs\":[{\"id\":\"9tt5ek\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"openid\"},{\"id\":\"cz4o2t\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"nickname\"},{\"id\":\"fk09b6\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"sex\"},{\"id\":\"x66sl2\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"province\"},{\"id\":\"pyn43m\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"city\"},{\"id\":\"sd69cg\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"country\"},{\"id\":\"3nfp1a\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"headimgurl\"},{\"id\":\"8w44l8\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"privilege\"},{\"id\":\"q4blc5\",\"require\":\"true\",\"children\":[],\"type\":\"string\",\"name\":\"unionid\"}],\"url\":\"http://localhost/wx/auth/redirect\",\"status\":\"有效\",\"example\":\"{    \\\"openid\\\":\\\" OPENID\\\",\\n\\\" nickname\\\": NICKNAME,\\n\\\"sex\\\":\\\"1\\\",\\n\\\"province\\\":\\\"PROVINCE\\\"\\n\\\"city\\\":\\\"CITY\\\",\\n\\\"country\\\":\\\"COUNTRY\\\",\\n\\\"headimgurl\\\":    \\\"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\\\",\\n\\\"privilege\\\":[ \\\"PRIVILEGE1\\\" \\\"PRIVILEGE2\\\"     ],\\n\\\"unionid\\\": \\\"o6_bmasdasdsad6_2sgVt7hMZOPfL\\\"\\n}\",\"description\":\"用户点击授权链接后,微信会调用此接口,此接口的参数只能由微信服务器提供,所以只供微信使用,不返回html,后台需要在此接口对用户信息等进行绑定然后重定向到html\",\"ignoreGHttpReqHeaders\":true,\"ignoreGHttpReqArgs\":true,\"ignoreGHttpRespHeaders\":true,\"ignoreGHttpRespArgs\":true}",
+            "createTime": "2018-02-27 21:40:55",
+            "id": "1dmNrGSn1M",
+            "lastUpdateTime": "2018-02-27 22:37:50",
+            "name": "wx002_拉取微信用户信息",
+            "parentId": "1dlFfedY3m",
+            "projectId": "1dlFfdB6D8",
+            "sort": 100,
+            "type": "sys.http"
+        },
+        projectGlobal = {
+            "environment": "[]",
+            "http": "{\"requestHeaders\":[{\"require\":\"true\",\"children\":[],\"name\":\"encrypt\",\"description\":\"none/simple\"},{\"require\":\"true\",\"children\":[],\"name\":\"version\",\"description\":\"接口版本号\"},{\"require\":\"true\",\"children\":[],\"name\":\"deviceType\",\"description\":\"设备类型 IOS/ANDROID\"},{\"require\":\"true\",\"children\":[],\"name\":\"appType\",\"description\":\"app类型 B/C\"},{\"require\":\"true\",\"children\":[],\"name\":\"appVersion\",\"description\":\"APP版本号\"}],\"responseHeaders\":[],\"requestArgs\":[],\"responseArgs\":[]}",
+            "id": "1dlFflS3Ts",
+            "projectId": "1dlFfdB6D8",
+            "status": "[{\"name\":\"有效\",\"value\":\"ENABLE\",\"t\":1493901719144},{\"name\":\"废弃\",\"value\":\"DEPRECATED\",\"t\":1493901728060}]"
+        },
+        pluginId = 'sys.http';
+    var content = JSON.parse(doc.content);
+    var requestArgs = content.requestArgs;
+    var responseArgs = content.responseArgs;
+    var url = content.url;
+
+    function generator() {
+        $.ajax({
+            type: "POST",
+            url: "generator",
+            dataType: "json",
+            data: {requestArgs:JSON.stringify(requestArgs),
+                responseArgs:JSON.stringify(responseArgs),
+                url:url
+            },
+            success: function (data) {
+                alert("success");
+            },
+            error: function (jqXHR) {
+                alert("发生错误：" + jqXHR.status);
+            }
+        });
+    }
+
+
+</script>
+
+<body>
+<button onclick="generator()"> 点击向后台传数据</button>
+</body>
+</html>

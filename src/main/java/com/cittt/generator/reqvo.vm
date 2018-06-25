@@ -1,0 +1,39 @@
+package ${package};
+
+public class ${reqvolist.className}{
+#foreach($reqvo in $reqvolist)
+/**
+* ${reqvo.description}
+*/
+    #if(${reqvo.require}) == "true")
+    @NotBlank
+    #end
+private ${reqvo.type} ${reqvo.name};
+#end
+
+##get方法
+#foreach($reqvo in $reqvolist)
+/**
+* ${reqvo.description}
+*
+* @return ${reqvo.name}
+*/
+public ${reqvo.name} get${reqvo.upname}() {
+return ${reqvo.name};
+}
+
+#end
+
+##set方法
+#foreach($reqvo in $reqvolist)
+/**
+* ${reqvolist.description}
+*
+* @param ${reqvo.name}
+*/
+public void set${reqvo.upname}(${reqvo.type} ${reqvo.name}) {
+this.${reqvo.name} = ${reqvo.name};
+}
+
+#end
+}
